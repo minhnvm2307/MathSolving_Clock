@@ -1,0 +1,23 @@
+# React Native specific files
+node_modules/
+ios/
+android/
+*.log
+*.lock
+*.tmp
+*.temp
+*.swp
+*.swo
+*.DS_Store
+*.idea/
+*.vscode/
+*.expo/
+.env
+.env.*
+build/
+dist/
+coverage/
+.gradle/
+.packages/
+.expo-shared/
+web-build/
