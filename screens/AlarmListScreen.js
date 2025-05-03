@@ -6,7 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useFocusEffect } from '@react-navigation/native';
 import AddAlarmScreen from './AddAlarmScreen';
-import { scheduleAlarm, cancelAlarm } from '../service/AlarmService';
+import { scheduleAlarm } from '../service/ScheduleService';
+import { cancelAlarm } from '../service/NotificationService'; // Import the cancelAlarm function
 
 const Stack = createStackNavigator();
 
@@ -68,6 +69,16 @@ function AlarmList({ navigation }) {
     }
   };
 
+  // Helper function to get game type display name
+  const getGameTypeDisplay = (gameType) => {
+    switch(gameType) {
+      case 'math': return 'Math';
+      case 'alphabet': return 'Alphabet';
+      case 'qrcode': return 'QR Code';
+      default: return 'Math'; // Default for backward compatibility
+    }
+  };
+
   const renderItem = ({ item }) => {
     const now = new Date();
     const alarmTime = new Date();
@@ -90,9 +101,16 @@ function AlarmList({ navigation }) {
         <Text style={styles.alarmDays}>
             {item.days.length > 0 ? item.days.join(', ') : 'Chỉ một lần'}
         </Text>
-        <Text style={styles.alarmDifficulty}>
-            Độ khó: {item.mathDifficulty}
-        </Text>
+        <View style={styles.alarmDetails}>
+          <View style={styles.gameTypeBadge}>
+            <Text style={styles.gameTypeText}>
+              {getGameTypeDisplay(item.gameType)}
+            </Text>
+          </View>
+          <Text style={styles.alarmDifficulty}>
+            {item.mathDifficulty}
+          </Text>
+        </View>
       </View>
       <View style={styles.alarmActions}>
         <Switch
@@ -175,10 +193,26 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 4,
   },
+  alarmDetails: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  gameTypeBadge: {
+    backgroundColor: '#e1f5fe',
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+    marginRight: 6,
+  },
+  gameTypeText: {
+    fontSize: 12,
+    color: '#0288d1',
+    fontWeight: '500',
+  },
   alarmDifficulty: {
     fontSize: 12,
     color: '#2196F3',
-    marginTop: 2,
   },
   alarmActions: {
     flexDirection: 'row',

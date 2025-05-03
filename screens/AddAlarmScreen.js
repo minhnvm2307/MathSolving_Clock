@@ -6,16 +6,22 @@ import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 // Thay đổi import để chỉ lấy scheduleAlarm từ service
-import { scheduleAlarm } from '../service/AlarmService'; // Chỉ cần scheduleAlarm ở đây
+import { scheduleAlarm } from '../service/ScheduleService'; // Chỉ cần scheduleAlarm ở đây
 
 const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const mathLevels = ['Easy', 'Medium', 'Hard', 'Expert'];
+const gameTypes = [
+  { id: 'math', name: 'Math Problems' },
+  { id: 'alphabet', name: 'Alphabet Arrangement' },
+  { id: 'qrcode', name: 'QR Code Scanner' }
+];
 
 const AddAlarmScreen = ({ navigation, route }) => {
   const [time, setTime] = useState(new Date());
   const [remainingTime, setRemainingTime] = useState('');
   const [selectedDays, setSelectedDays] = useState([]);
   const [mathDifficulty, setMathDifficulty] = useState(1); // 0-3
+  const [gameType, setGameType] = useState('math'); // Default to math problems
   const [vibrate, setVibrate] = useState(true); // Giữ lại vì có thể cần cho thông báo Android
   const [snoozeEnabled, setSnoozeEnabled] = useState(true);
   const [showTimePicker, setShowTimePicker] = useState(Platform.OS === 'android');
@@ -41,6 +47,7 @@ const AddAlarmScreen = ({ navigation, route }) => {
         time: totalMinutes, // Lưu dưới dạng tổng số phút từ nửa đêm
         days: selectedDays.length > 0 ? selectedDays : [], // Lưu mảng rỗng nếu không chọn ngày
         mathDifficulty: mathLevels[mathDifficulty],
+        gameType: gameType, // Add new game type field
         vibrate: vibrate, // Lưu trạng thái vibrate
         snoozeEnabled: snoozeEnabled,
         active: true, // Mặc định là active khi tạo mới
@@ -147,6 +154,31 @@ const AddAlarmScreen = ({ navigation, route }) => {
     );
   };
 
+  // Render game type selection buttons
+  const renderGameTypeButtons = () => {
+    return (
+      <View style={styles.gameTypeContainer}>
+        {gameTypes.map((type) => (
+          <TouchableOpacity
+            key={type.id}
+            style={[
+              styles.gameTypeButton,
+              gameType === type.id && styles.selectedGameType,
+            ]}
+            onPress={() => setGameType(type.id)}
+          >
+            <Text style={[
+              styles.gameTypeText,
+              gameType === type.id && styles.selectedGameTypeText,
+            ]}>
+              {type.name}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    );
+  };
+
   return (
     <ScrollView style={styles.container}>
       {timePickerView()}
@@ -178,7 +210,10 @@ const AddAlarmScreen = ({ navigation, route }) => {
         {selectedDays.length === 7 ? " (Hàng ngày)" : ""}
       </Text>
 
-      <Text style={styles.sectionTitle}>Độ khó bài toán</Text>
+      <Text style={styles.sectionTitle}>Loại trò chơi để tắt báo thức</Text>
+      {renderGameTypeButtons()}
+
+      <Text style={styles.sectionTitle}>Độ khó</Text>
       <View style={styles.sliderContainer}>
         <Slider
           style={styles.slider}
@@ -286,6 +321,32 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       marginBottom: 25, // Tăng khoảng cách dưới
       fontStyle: 'italic',
+  },
+  // Game type selection styles
+  gameTypeContainer: {
+    marginBottom: 25,
+  },
+  gameTypeButton: {
+    backgroundColor: '#e0e0e0',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  selectedGameType: {
+    backgroundColor: '#2196F3',
+    borderColor: '#1976D2',
+  },
+  gameTypeText: {
+    textAlign: 'center',
+    fontSize: 16,
+    color: '#444',
+    fontWeight: '500',
+  },
+  selectedGameTypeText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
   sliderContainer: {
     alignItems: 'stretch', // Kéo dài slider theo chiều ngang

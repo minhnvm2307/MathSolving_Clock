@@ -5,19 +5,19 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Screens
 import AlarmListScreen from './screens/AlarmListScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import AddAlarmScreen from './screens/AddAlarmScreen';
 import MathProblemScreen from './screens/MathProblemScreen';
+import AlphabetGameScreen from './screens/AlphabetGameScreen';
+import QRCodeGameScreen from './screens/QRCodeGameScreen';
 
-// Service Functions - Import thêm initializeAlarmService
-import {
-    setupNotificationHandler,
-    registerForPushNotificationsAsync,
-    initializeAlarmService // Import hàm khởi tạo
-} from './service/AlarmService';
+// Import from service modules
+import { initializeAlarmService } from './service/BackgroundService';
+import { setupNotificationHandler } from './service/NotificationService';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -147,7 +147,26 @@ export default function App() {
             title: 'Giải Toán Để Tắt', // Tiêu đề tiếng Việt
             headerBackVisible: false, // Ẩn nút back mặc định
             gestureEnabled: false, // Chặn cử chỉ vuốt quay lại
-            // Có thể thêm nút header tùy chỉnh nếu cần
+          }}
+        />
+        {/* Màn hình sắp xếp bảng chữ cái */}
+        <Stack.Screen
+          name="AlphabetGame"
+          component={AlphabetGameScreen}
+          options={{
+            title: 'Sắp Xếp Bảng Chữ Cái',
+            headerBackVisible: false, 
+            gestureEnabled: false,
+          }}
+        />
+        {/* Màn hình quét mã QR */}
+        <Stack.Screen
+          name="QRCodeGame"
+          component={QRCodeGameScreen}
+          options={{
+            title: 'Quét Mã QR',
+            headerBackVisible: false,
+            gestureEnabled: false,
           }}
         />
       </Stack.Navigator>
